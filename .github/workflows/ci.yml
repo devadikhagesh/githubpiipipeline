@@ -19,7 +19,10 @@ jobs:
     - run: ls
     - name: Run build
       run: |
-        sudo chmod +x ./docker.sh
-        sudo ./docker.sh 
+        sudo docker stop sample-app
+        sudo docker rm sample-app
+        sudo docker rmi sample-image
+        sudo docker build -t sample-image .
+        sudo docker run --name sample-app -d -p 4100:4100 sample-image
         
         
