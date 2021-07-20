@@ -3,23 +3,27 @@ name: Push-to-EC2
 on: push
 
 jobs:
-  deploy:
-    name: Push to EC2 Instance
-    runs-on: ubuntu-latest
-
-    steps:
+  ci:
+    runs-on: self-hosted
+    steps: 
     - name: Checkout the code
       uses: actions/checkout@v1
-
     - name: Deploy to my EC2 instance
       uses: easingthemes/ssh-deploy@v2.1.5
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        SOURCE: "./"
-        REMOTE_HOST: "13.212.189.24"
+        REMOTE_HOST: "18.138.249.41"
         REMOTE_USER: "ubuntu"
-        TARGET: "/home/ubuntu/html-docs-hello-world/"
+        TARGET: "/home/ubuntu/"
     - run: pwd
     - run: chmod +x script.sh
     - run: ./script.sh -t
     - run: ./script.sh -p
+    - run: ls
+    - name: Run build
+      run: |
+        sudo docker stop sample-app
+        sudo docker rm sample-app
+        sudo docker rmi sample-image
+        sudo docker build -t sample-image .
+        sudo docker run --name sample-app -d -p 4100:4100 sample-image
